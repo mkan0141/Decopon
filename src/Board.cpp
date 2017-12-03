@@ -14,7 +14,7 @@ public:
 	}
 
 	// 合法手をbitで返す
-	BitBoard GenValidPoa() {
+	BitBoard GenValidPoss() {
 		BitBoard blank, me, enemy, mask, t, valid = 0;
 
 		if (color == White) {
@@ -43,7 +43,7 @@ public:
 		}
 		valid = blank & (t >> 1);
 
-		// 
+		// 上
 		mask = enemy & 0x00ffffffffffff00;
 		t = mask & (me << 8);
 		for (int i = 0; i < 5; i++) {
@@ -51,7 +51,7 @@ public:
 		}
 		valid |= blank & (t << 8);
 
-		// ��
+		// 下
 		mask = enemy & 0x00ffffffffffff00;
 		t = mask & (me >> 8);
 		for (int i = 0; i < 5; i++) {
@@ -59,7 +59,7 @@ public:
 		}
 		valid |= blank & (t >> 8);
 
-		// �E��
+		// 右上
 		mask = enemy & 0x007e7e7e7e7e7e00;
 		t = mask & (me << 7);
 		for (int i = 0; i < 5; i++) {
@@ -67,7 +67,7 @@ public:
 		}
 		valid |= blank & (t << 7);
 
-		// ����
+		// 左上
 		mask = enemy & 0x007e7e7e7e7e7e00;
 		t = mask & (me << 9);
 		for (int i = 0; i < 5; i++) {
@@ -75,7 +75,7 @@ public:
 		}
 		valid |= blank & (t << 9);
 
-		// �E��
+		// 右下
 		mask = enemy & 0x007e7e7e7e7e7e00;
 		t = mask & (me >> 9);
 		for (int i = 0; i < 5; i++) {
@@ -83,7 +83,7 @@ public:
 		}
 		valid |= blank & (t >> 9);
 
-		// ����
+		// 左下
 		mask = enemy & 0x007e7e7e7e7e7e00;
 		t = mask & (me >> 7);
 		for (int i = 0; i < 5; i++) {
@@ -94,7 +94,7 @@ public:
 		return valid;
 	}
 
-	// ���Ԃ�G�΂�bit�ŕԂ�
+	// 裏返る敵石をbitで返す
 	BitBoard getReverse(BitBoard pos) {
 		int i = 0;
 		BitBoard me, enemy, mask, rev = 0, rev_tmp;
@@ -110,7 +110,7 @@ public:
 
 		rev_tmp = 0;
 
-		// �E
+		// 右
 		rev_tmp = 0;
 		mask = 0x7e7e7e7e7e7e7e7e;
 		for (i = 1; ((pos >> i) & mask & enemy) != 0; i++) {
@@ -120,7 +120,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// ��
+		// 左
 		rev_tmp = 0;
 		mask = 0x7e7e7e7e7e7e7e7e;
 		for (i = 1; ((pos << i) & mask & enemy) != 0; i++) {
@@ -130,7 +130,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// ��
+		// 上
 		rev_tmp = 0;
 		mask = 0x00ffffffffffff00;
 		for (i = 1; ((pos << 8 * i) & mask & enemy) != 0; i++) {
@@ -140,7 +140,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// ��
+		// 下
 		rev_tmp = 0;
 		mask = 0x00ffffffffffff00;
 		for (i = 1; ((pos >> 8 * i) & mask & enemy) != 0; i++) {
@@ -150,7 +150,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// �E��
+		// 右上
 		rev_tmp = 0;
 		mask = 0x007e7e7e7e7e7e00;
 		for (i = 1; ((pos << 7 * i) & mask & enemy) != 0; i++) {
@@ -160,7 +160,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// ����
+		// 左上
 		rev_tmp = 0;
 		mask = 0x007e7e7e7e7e7e00;
 		for (i = 1; ((pos << 9 * i) & mask & enemy) != 0; i++) {
@@ -170,7 +170,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// �E��
+		// 右下
 		rev_tmp = 0;
 		mask = 0x007e7e7e7e7e7e00;
 		for (i = 1; ((pos >> 9 * i) & mask & enemy) != 0; i++) {
@@ -180,7 +180,7 @@ public:
 			rev |= rev_tmp;
 		}
 
-		// ����
+		// 左下
 		rev_tmp = 0;
 		mask = 0x007e7e7e7e7e7e00;
 		for (i = 1; ((pos >> 7 * i) & mask & enemy) != 0; i++) {
@@ -193,7 +193,7 @@ public:
 		return rev;
 	}
 
-	// ���͍��W��bit�ɕϊ�����
+	// 入力座標をbitに変換する
 	BitBoard transformBitBoard(char x, int y) {
 		BitBoard pos;
 		int xNum = 7 - x + 'A';
@@ -204,7 +204,7 @@ public:
 		return pos;
 	}
 
-	// �����̐΂�u�����Ƃ��̏���
+	// 自分の意思を置いた時の処理
 	void putPos(BitBoard pos) {
 		
 		BitBoard rev = getReverse(pos);
@@ -231,7 +231,7 @@ public:
 		}
 	}
 
-	// �Ֆʂ̏o��
+	// 盤面を出力
 	void printBoard() {
 		BitBoard pos = (BitBoard)1 << 63;
 
@@ -260,8 +260,6 @@ private:
 	BitBoard black, white;
 	bool color = Black;
 	int turn_num = 1;
-
-
 };
 
 int main() {
