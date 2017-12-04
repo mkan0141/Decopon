@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <cstdint>
 
 #define Black 0
@@ -11,6 +12,20 @@ public:
 	Board() {
 		black = 0x1008000000;
 		white = 0x810000000;
+	}
+
+	std::vector<BitBoard> getPosVec(){
+		std::vector<BitBoard> vec;
+		BitBoard pos = GenValidPos();
+
+		BitBoard tmp = 1;
+		for(int i = 0; i < 64; i++){
+			if((tmp | pos) != 0){
+				vec.push_back(tmp);
+			}
+			tmp = (tmp << 1);
+		}
+		return vec;
 	}
 
 	BitBoard retValid(){
