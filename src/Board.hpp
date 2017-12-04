@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <vector>
 #include <cstdint>
 
@@ -10,8 +11,8 @@ typedef std::uint64_t BitBoard;
 class Board {
 public:
 	Board() {
-		black = 0x1008000000;
-		white = 0x810000000;
+		this->black = 0x1008000000;
+		this->white = 0x810000000;
 	}
 
 	std::vector<BitBoard> getPosVec(){
@@ -44,14 +45,17 @@ public:
 	}
 
 	void printPos(){
+		if(getColor() == White)std::cout<<"it's white!!"<<std::endl;
+		this->valid = GenValidPos();
+
 		BitBoard pos = (BitBoard)1 << 63;
 
 		std::cout << "置ける場所[ ";
 
 		for (int i = 0; i < 64; i++) {
 
-			if ((valid & pos) != 0) {
-				std::cout << "(" << i / 8 + 1 << "," << i % 8 + 1 <<"), ";
+			if ((this->valid & pos) != 0) {
+				std::cout << "(" << chchar[i % 8 + 1] << "," << i / 8 + 1 <<"), ";
 			}
 			pos >>= 1;
 		}
@@ -63,24 +67,23 @@ public:
 		
 		BitBoard rev = getReverse(pos);
 
-		if (color == Black) {
-			black ^= pos | rev;
-			white ^= rev;
+		if (this->color == Black) {
+			this->black ^= pos | rev;
+			this->white ^= rev;
 		}
-		else if (color == White) {
-			black ^= rev;
-			white ^= pos | rev;
+		else if (this->color == White) {
+			this->black ^= rev;
+			this->white ^= pos | rev;
 		}
-
 	}
 	
 	void nextTurn() {
 		turn_num++;
 		
-		if (color == Black) {
-			color = White;
+		if (this->color == Black) {
+			this->color = White;
 		} else {
-			color = Black;
+			this->color = Black;
 		}
 	}
 
@@ -94,10 +97,10 @@ public:
 			if (i % 8 == 0)std::cout << i / 8 + 1 << " ";
 
 
-			if ((black & pos) != 0) {
+			if ((this->black & pos) != 0) {
 				std::cout << "x" << " ";
 			}
-			else if ((white & pos) != 0) {
+			else if ((this->white & pos) != 0) {
 				std::cout << "o" << " ";
 			} else {
 				std::cout << "." << " ";
@@ -109,16 +112,7 @@ public:
 		}
 	}
 
-	BitBoard getBlack(){
-		return this->black;
-	}
-
-	BitBoard getWhite(){
-		return this->white;
-	}
-
 	bool isEnd(){
-		valid = GenValidPos();
 		
 		if(this->turn_num == 60){
 			return true;
@@ -127,26 +121,41 @@ public:
 		}
 	}
 
+	bool getColor(){
+		return this->color;
+	}
+
+	BitBoard getBlack(){
+		return this->black;
+	}
+
+	BitBoard getWhite(){
+		return this->white;
+	}
+
 private:
 	BitBoard black, white;
 	bool color = Black;
 	bool is_end = false;
 	BitBoard valid;
 	int turn_num = 1;
-
+	std::map<int ,char> chchar = { {1, 'A'}, {2, 'B'}, {3, 'C'}, {4, 'D'}, {5, 'E'}, {6, 'F'}, {7, 'G'}, {8, 'H'} };
+	
 	// 合法手をbitで返す
 	BitBoard GenValidPos() {
-		BitBoard blank, me, enemy, mask, t, valid = 0;
+		BitBoard blank, me, enemy, mask, t, retValid = 0;
 
-		if (color == Black) {
-			me = black;
-			enemy = white;
+		if (this->color == Black) {
+			std::cout<<"this turn is black"<<std::endl;
+			me = this->black;
+			enemy = this->white;
 		} else {
-			me = white;
-			enemy = black;
+			std::cout<<"this turn is white"<<std::endl;
+			me = this->white;
+			enemy = this->black;
 		}
 
-		blank = ~(white | black);
+		blank = ~(this->white | this->black);
 
 		// 右
 		mask = enemy & 0x7e7e7e7e7e7e7e7e;
@@ -154,7 +163,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t << 1);
 		}
-		valid = blank & (t << 1);
+		retValid = blank & (t << 1);
 
 		// 左
 		mask = enemy & 0x7e7e7e7e7e7e7e7e;
@@ -162,7 +171,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t >> 1);
 		}
-		valid |= blank & (t >> 1);
+		retValid |= blank & (t >> 1);
 
 		// 上
 		mask = enemy & 0x00ffffffffffff00;
@@ -170,7 +179,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t << 8);
 		}
-		valid |= blank & (t << 8);
+		retValid |= blank & (t << 8);
 
 		// 下
 		mask = enemy & 0x00ffffffffffff00;
@@ -178,7 +187,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t >> 8);
 		}
-		valid |= blank & (t >> 8);
+		retValid |= blank & (t >> 8);
 
 		// 右上
 		mask = enemy & 0x007e7e7e7e7e7e00;
@@ -186,7 +195,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t << 7);
 		}
-		valid |= blank & (t << 7);
+		retValid |= blank & (t << 7);
 
 		// 左上
 		mask = enemy & 0x007e7e7e7e7e7e00;
@@ -194,7 +203,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t << 9);
 		}
-		valid |= blank & (t << 9);
+		retValid |= blank & (t << 9);
 
 		// 右下
 		mask = enemy & 0x007e7e7e7e7e7e00;
@@ -202,7 +211,7 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t >> 9);
 		}
-		valid |= blank & (t >> 9);
+		retValid |= blank & (t >> 9);
 
 		// 左下
 		mask = enemy & 0x007e7e7e7e7e7e00;
@@ -210,9 +219,9 @@ private:
 		for (int i = 0; i < 5; i++) {
 			t |= mask & (t >> 7);
 		}
-		valid |= blank & (t >> 7);
+		retValid |= blank & (t >> 7);
 
-		return valid;
+		return retValid;
 	}
 
 	// 裏返る敵石をbitで返す
@@ -220,13 +229,12 @@ private:
 		int i = 0;
 		BitBoard me, enemy, mask, rev = 0, rev_tmp;
 
-		if (color == Black) {
-			me = black;
-			enemy = white;
-		}
-		else {
-			me = white;
-			enemy = black;
+		if (this->color == Black) {
+			me = this->black;
+			enemy = this->white;
+		} else {
+			me = this->white;
+			enemy = this->black;
 		}
 
 		rev_tmp = 0;
