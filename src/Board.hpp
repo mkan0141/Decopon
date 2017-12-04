@@ -72,7 +72,6 @@ public:
 			white ^= pos | rev;
 		}
 
-		nextTurn();
 	}
 	
 	void nextTurn() {
@@ -108,6 +107,14 @@ public:
 
 			pos >>= 1;
 		}
+	}
+
+	BitBoard getBlack(){
+		return this->black;
+	}
+
+	BitBoard getWhite(){
+		return this->white;
 	}
 
 	bool isEnd(){
