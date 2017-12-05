@@ -22,7 +22,7 @@ public:
 
 		BitBoard tmp = 1;
 		for(int i = 0; i < 64; i++){
-			if((tmp | pos) != 0){
+			if((tmp & pos) != 0){
 				vec.push_back(tmp);
 			}
 			tmp = (tmp << 1);
@@ -45,23 +45,7 @@ public:
 		return pos;
 	}
 
-	void printPos(){
-		if(getColor() == White)std::cout<<"it's white!!"<<std::endl;
-		this->valid = GenValidPos();
-
-		BitBoard pos = (BitBoard)1 << 63;
-
-		std::cout << "置ける場所[ ";
-
-		for (int i = 0; i < 64; i++) {
-
-			if ((this->valid & pos) != 0) {
-				std::cout << "(" << chchar[i % 8 + 1] << "," << i / 8 + 1 <<"), ";
-			}
-			pos >>= 1;
-		}
-		std::cout << " ]" << std::endl;
-	}
+	
 
 	// 自分の石を置いた時の処理
 	void putPos(BitBoard pos) {
@@ -86,6 +70,21 @@ public:
 		} else {
 			this->color = Black;
 		}
+	}
+
+	void undoTurn() {
+		turn_num--;
+		
+		if (this->color == Black) {
+			this->color = White;
+		} else {
+			this->color = Black;
+		}
+	}
+
+	void changeColor(BitBoard black, BitBoard white){
+		this->white = white;
+		this->black = black;
 	}
 
 	// 盤面を出力
@@ -113,6 +112,38 @@ public:
 		}
 	}
 
+	void printPos(){
+		if(getColor() == White)std::cout<<"it's white!!"<<std::endl;
+		this->valid = GenValidPos();
+
+		BitBoard pos = (BitBoard)1 << 63;
+
+		std::cout << "置ける場所[ ";
+
+		for (int i = 0; i < 64; i++) {
+
+			if ((this->valid & pos) != 0) {
+				std::cout << "(" << chchar[i % 8 + 1] << "," << i / 8 + 1 <<"), ";
+			}
+			pos >>= 1;
+		}
+		std::cout << " ]" << std::endl;
+	}
+
+	void AISetPosPrint(BitBoard pos){
+		std::cout << "AI set ";
+
+		BitBoard cnt = (BitBoard)1 << 63;
+		for (int i = 0; i < 64; i++) {
+
+			if ((pos & cnt) != 0) {
+				std::cout << "(" << chchar[i % 8 + 1] << "," << i / 8 + 1 <<"), " << std::endl;
+				return ;
+			}
+			cnt >>= 1;
+		}
+	}
+
 	bool isEnd(){
 		
 		if(this->turn_num == 60){
@@ -126,10 +157,12 @@ public:
 		return this->color;
 	}
 
+	// 黒色のbitboardを返す
 	BitBoard getBlack(){
 		return this->black;
 	}
 
+	// 白色のbitboardを返す
 	BitBoard getWhite(){
 		return this->white;
 	}
@@ -147,11 +180,9 @@ private:
 		BitBoard blank, me, enemy, mask, t, retValid = 0;
 
 		if (this->color == Black) {
-			std::cout<<"this turn is black"<<std::endl;
 			me = this->black;
 			enemy = this->white;
 		} else {
-			std::cout<<"this turn is white"<<std::endl;
 			me = this->white;
 			enemy = this->black;
 		}
