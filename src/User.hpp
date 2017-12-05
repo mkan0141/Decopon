@@ -28,7 +28,7 @@ public:
     }
 private:
     bool inputCheck(std::string c, int x){
-	    if("A" <= c && c <= "H" && 1 <= x && x <= 7){
+	    if("A" <= c && c <= "H" && 1 <= x && x <= 8){
 		    return true;
 	    }else{
 		    return false;
