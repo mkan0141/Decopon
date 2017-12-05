@@ -113,7 +113,6 @@ public:
 	}
 
 	void printPos(){
-		if(getColor() == White)std::cout<<"it's white!!"<<std::endl;
 		this->valid = GenValidPos();
 
 		BitBoard pos = (BitBoard)1 << 63;
@@ -130,8 +129,7 @@ public:
 		std::cout << " ]" << std::endl;
 	}
 
-	void AISetPosPrint(BitBoard pos){
-		std::cout << "AI set ";
+	void SetPosPrint(BitBoard pos){
 
 		BitBoard cnt = (BitBoard)1 << 63;
 		for (int i = 0; i < 64; i++) {
@@ -144,14 +142,17 @@ public:
 		}
 	}
 
+	/*ゲームを続けられるかの判定*/
 	bool isEnd(){
-		
-		if(this->turn_num == 60){
+		// std::cout << "現在の石の数: " << this->stone_num << std::endl;
+		if(this->stone_num == 64){
 			return true;
 		}else{
 			return false;
 		}
+
 	}
+
 
 	bool getColor(){
 		return this->color;
@@ -167,10 +168,60 @@ public:
 		return this->white;
 	}
 
+	// 黒石の数を数える
+	int countBlack(){
+		int ret = 0;
+		BitBoard pos = (BitBoard)1 << 63;
+
+		for (int i = 0; i < 64; i++) {
+
+			if ((this->black & pos) != 0) {
+				ret++;
+			}
+			pos >>= 1;
+		}
+		return ret;
+	}
+	//  白石の数を数える
+	int countWhite(){
+		int ret = 0;
+		BitBoard pos = (BitBoard)1 << 63;
+
+		for (int i = 0; i < 64; i++) {
+
+			if ((this->white & pos) != 0) {
+				ret++;
+			}
+			pos >>= 1;
+		}
+		return ret;
+	}
+
+	void addStone(){
+		notpass();
+		this->stone_num++;
+	}
+
+	void notpass(){
+		this->passed = false;
+	}
+
+	void pass(){
+		this->passed = true;
+	}
+
+	bool passCheck(){
+		if(this->passed == true){
+			return true;
+		}else{
+			return false;
+		}
+	}
 private:
 	BitBoard black, white;
 	bool color = Black;
-	bool is_end = false;
+	bool passed = false;
+	int stone_num = 4;
 	BitBoard valid;
 	int turn_num = 1;
 	std::map<int ,char> chchar = { {1, 'A'}, {2, 'B'}, {3, 'C'}, {4, 'D'}, {5, 'E'}, {6, 'F'}, {7, 'G'}, {8, 'H'} };
