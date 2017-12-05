@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib>
+#include <random>
 #include <vector>
 #include "Board.hpp"
 
@@ -7,8 +7,12 @@ class RandomAI{
 public:
     BitBoard RandomPos(std::vector<BitBoard> v){
         int index = 0;
-
-        index = int(rand() * (v.size()  / (1.0 + RAND_MAX)));
+        
+        std::random_device rnd;
+        std::mt19937 mt(rnd());
+        std::uniform_int_distribution<> rand(0, v.size() - 1);
+        
+        index = rand(mt);
 
         return v[index];
     }
