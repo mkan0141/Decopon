@@ -1,46 +1,41 @@
 #include <iostream>
-#include "Board.cpp"
-bool inputCheck(char c, int x);
+#include <vector>
+#include "Board.hpp"
+#include "User.hpp"
+#include "AI.hpp"
+
 
 int main() {
 	int a;
 	char c;
+	bool te;
+	BitBoard x;
 	Board game;
+	User user;
+	AI ai;
+
+
+	std::cout << "player (先手 0 後手 1) >> " ;
+	std::cin >> te;
+
 	game.printBoard();
 	while (!game.isEnd()) {
 		game.printBoard();
 		game.printPos();
-	go:;
-		std::cout << "(A ~ H) >> ";
-		std::cin >> c;
-		std::cout << "(1 ~ 8) >> ";
-		std::cin >> a;
-		
-		if(inputCheck(c,a) == false){
-			std::cout << "不正な入力です. もう一度入力してください" << std::endl << std::endl;
-			goto go;
+		if(!te){
+			x = user.input(game);
+			te = !te;
+		}else{
+			std::vector<BitBoard> vec = game.getPosVec();
+			
+			for(auto v : vec){
+				
+
+			}
+			te = !te;
 		}
 
-		BitBoard x = game.transformBitBoard(c, a);
-		
-		// std::cout << x <<std::endl;
-		// std::cout << game.retValid() << std::endl << std::endl;
-
-		game.printBoard();
-
-		if((game.retValid() & x) == 0){
-			std::cout << "hogeeeeeeeeeee" << std::endl;
-			goto go;
-		}
 		game.putPos(x);
 	}
 	
-}
-
-bool inputCheck(char c, int x){
-	if('A' <= c && c <= 'H' && 1 <= x && x <= 7){
-		return true;
-	}else{
-		return false;
-	}
 }
