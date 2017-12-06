@@ -46,13 +46,7 @@ public:
             return eval(board, color);
         }
 
-        int best = 0;
-
-        if(color == board.getColor()){
-            best = -10000;
-        }else{
-            best = 10000;
-        }
+        int best = -10000000;
 
         std::vector<BitBoard> vec = board.getPosVec();
         BitBoard b, w;
@@ -61,16 +55,20 @@ public:
         b = board.getBlack();
         w = board.getWhite();
 
+        if(vec.size() == 0){
+            best = 0;
+        }
+
         for(int i = 0; i < vec.size(); i++){
 
             board.putPos(vec[i]);
             board.nextTurn();
-            int now = NegaMax(board, depth - 1, !color);
+            int now = MinMax(board, depth - 1, color);
 
-            if(color == true){
+            if(color == board.getColor()){
                 best = max(best, now);
             }else{
-                best = min(best, now);
+                best = max(best, -now);
             }
 
             board.changeColor(b, w);
@@ -112,7 +110,7 @@ public:
     }
 
 private:
-    int t_weight[64] = {
+    int weight[64] = {
         30, -12,  0, -1, -1,  0, -12, 30,
          0,  -3,  0, -1, -1,  0,  -3,  0,
          0,  -3,  0, -1, -1,  0,  -3,  0,
@@ -123,7 +121,7 @@ private:
         30, -12,  0, -1, -1,  0, -12, 30
     };
 
-    int weight[64] = {
+    int t_weight[64] = {
          50,  -20,   0,  -1,  -1,   0, -20,  50,
         -20,  -30,  -3,  -3,  -3,  -3, -30, -20,
           0,   -3,   0,  -1,  -1,   0,  -3,  20,
