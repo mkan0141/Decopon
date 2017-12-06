@@ -6,7 +6,7 @@
 #include "RandomAI.hpp"
 
 #define TRAINING 10
-#define AI_t false //  main AI false -> 後手         true -> 先手
+#define AI_t Black //  main AI White -> 後手         Black -> 先手
 
 int main() {
     
@@ -29,10 +29,10 @@ int main() {
     te = AI_t;
 	while (!game.isEnd()) {
 
-		// game.printBoard();
+		game.printBoard();
 		// game.printPos();
 
-		if(!te){
+		if(te){
 			
 			std::vector<BitBoard> vec = game.getPosVec();
 
@@ -57,7 +57,7 @@ int main() {
 			
 			te = !te;
 		}else{
-			
+            game.printPos();
 			// x = user.input(game);
 			// te = !te;
 
@@ -83,14 +83,23 @@ int main() {
 
 			for(auto v : vec){
 				game.changeColor(b, w);
-				int new_value = ai.NegaMax(game, 5);
+				int new_value;
+                // std::cout << "te == game.getColor  ---> " << (game.getColor() == te) << std::endl;
 
+                // 54手目以降はBFSで全探索させる それより前はMinMax
+                game.putPos(v);
+                game.nextTurn();
+                if(game.getStoneNum() >= 54) new_value = ai.dfs(game, te);
+                else new_value = ai.MinMax(game, 5, false);
+                game.undoTurn();
+                std::cout << "評価値: " << new_value << std::endl;
 				if(value < new_value){
 					value = new_value;
 					x = v;
-				} 
+				}
 				game.changeColor(b, w);
 			}
+            // std::cout << "評価値: " << x << std::endl;
 			std::cout << "NegaMax_AI set ";
 			game.SetPosPrint(x);
 			te = !te;
@@ -118,7 +127,7 @@ int main() {
 	}
 
     }
-    if(AI_t == true){
+    if(AI_t == Black){
         std::cout << "AI win: " << black_win << std::endl;
         std::cout << "RandomAI win: " << white_win << std::endl;
         std::cout << "draw: " << draw << std::endl;
