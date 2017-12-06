@@ -12,8 +12,8 @@ typedef std::uint64_t BitBoard;
 class Board {
 public:
 	Board() {
-		this->black = 0x1008000000;
-		this->white = 0x810000000;
+		this->black = 0x810000000;
+		this->white = 0x1008000000;
 	}
 
 	std::vector<BitBoard> getPosVec(){
@@ -30,10 +30,6 @@ public:
 		return vec;
 	}
 
-	BitBoard retValid(){
-		return this->valid;
-	}
-
 	// 入力座標をbitに変換する
 	BitBoard transformBitBoard(char x, int y) {
 		BitBoard pos;
@@ -45,7 +41,6 @@ public:
 		return pos;
 	}
 
-	
 
 	// 自分の石を置いた時の処理
 	void putPos(BitBoard pos) {
@@ -153,6 +148,9 @@ public:
 
 	}
 
+	BitBoard retValid(){
+		return this->valid;
+	}
 
 	bool getColor(){
 		return this->color;
@@ -197,6 +195,11 @@ public:
 		return ret;
 	}
 
+	// 盤面の石の数を返す
+	int getStoneNum(){
+		return this->stone_num;
+	}
+
 	void addStone(){
 		notpass();
 		this->stone_num++;
@@ -217,6 +220,7 @@ public:
 			return false;
 		}
 	}
+
 private:
 	BitBoard black, white;
 	bool color = Black;
