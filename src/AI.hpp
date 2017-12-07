@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include "Board.hpp"
 
 class AI{
@@ -79,15 +80,17 @@ public:
 
     // 完全読み
     int dfs(Board board, bool color){
-        if(board.isEnd() == true){
+        std::vector<BitBoard> vec = board.getPosVec();
+        if(vec.size() == 0){
             if(color == Black){
+                // std::cout << "dfs___   black  = " << board.countBlack() << "  white = " <<  board.countWhite() << std::endl;
                 return board.countBlack() >= board.countWhite();
             }else{
+                // std::cout << "dfs___   black  = " << board.countBlack() << "  white = " <<  board.countWhite() << std::endl;
                 return board.countBlack() < board.countWhite();
             }
         }
 
-        std::vector<BitBoard> vec = board.getPosVec();
         BitBoard b, w;
         int best = 0;
 
@@ -99,14 +102,64 @@ public:
 
             board.putPos(vec[i]);
             board.nextTurn();
+
             //board.printBoard();
             best += dfs(board, color);
+
+            // 盤面を元に戻す
             board.changeColor(b, w);
 
+            // ターンを1つ戻す
             board.undoTurn();
         }
 
         return best;
+    } 
+
+    // Debug Alpha Beat
+    int AlphaBeta(Board board, bool color, bool turn, int depth, int alpha, int beta){
+        assert(alpha <= beta);
+        // 終了処理
+        if(depth == 0 || board.isEnd()){
+            return eval(board, turn);
+        }else if(board.passCheck() == true){
+            turn *= -1;
+        }
+
+        std::vector<BitBoard> vec = board.getPosVec();
+
+        // 
+        BitBoard b = board.getBlack();
+        BitBoard w = board.getWhite();
+
+        for(int i = 0; i < vec.size(); i++){
+            
+            board.putPos(vec[i]);
+
+            board.nextTurn();
+            int value = AlphaBeta(board, color, !turn, depth - 1, alpha, beta);
+
+            if(turn == color && value >= beta){
+                return value;
+            }else if(turn != color && value <= alpha){
+                return value;
+            }
+
+            if(turn == color && value >= alpha){
+                alpha = value;
+            }else if(turn != color && value < beta){
+                beta = value;
+            }
+
+            board.changeColor(b,w);
+            board.undoTurn();
+        }
+
+        if(turn == color){
+            return alpha;
+        }else{
+            return beta;
+        }
     }
 
 private:
