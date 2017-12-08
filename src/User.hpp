@@ -6,19 +6,17 @@ class User{
 public:
     BitBoard input(Board game){
     go:;
-        int a;
+        std::string s;
         std::string c;
-		std::cout << "(A ~ H) >> ";
-		std::cin >> c;
-		std::cout << "(1 ~ 8) >> ";
-		std::cin >> a;
+		std::cout << "user input >> ";
+		std::cin >> s;
 
-		if(inputCheck(c,a) == false){
+		if(s.size() != 2 || inputCheck(s[0], s[1]) == false){
 			std::cout << "不正な入力です. もう一度入力してください" << std::endl << std::endl;
 			goto go;
 		}
 
-        BitBoard x = game.transformBitBoard(char(c[0]), a);
+        BitBoard x = game.transformBitBoard(s[0], s[1]);
 
         if((game.retValid() & x) == 0){
 			std::cout << "hogeeeeeeeeeee" << std::endl;
@@ -26,12 +24,15 @@ public:
 		}
         return x;
     }
+
 private:
-    bool inputCheck(std::string c, int x){
-	    if("A" <= c && c <= "H" && 1 <= x && x <= 8){
+    bool inputCheck(char al, char num){
+		
+	    if(( ('A' <= al && al <= 'H') || ('a' <= al && al <= 'h') ) && '1' <= num && num <= '8'){
 		    return true;
 	    }else{
 		    return false;
 	    }
+
     }
 };

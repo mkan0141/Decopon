@@ -31,10 +31,15 @@ public:
 	}
 
 	// 入力座標をbitに変換する
-	BitBoard transformBitBoard(char x, int y) {
+	BitBoard transformBitBoard(char x, char y) {
 		BitBoard pos;
-		int xNum = int(7 - x + 'A');
-		int yNum = y;
+		int xNum;
+		if('A' <= x && x <= 'H'){
+			xNum = int(7 - x + 'A');
+		}else{
+			xNum = int(7 - x + 'a');
+		}
+		int yNum = int(y - '0');
 
 		pos = ((BitBoard)1 << (xNum + 8 * (8 - yNum)));
 
@@ -130,7 +135,7 @@ public:
 		for (int i = 0; i < 64; i++) {
 
 			if ((pos & cnt) != 0) {
-				std::cout << "(" << chchar[i % 8 + 1] << "," << i / 8 + 1 <<"), " << std::endl;
+				std::cout << "" << chchar[i % 8 + 1] << "" << i / 8 + 1 <<", " << std::endl;
 				return ;
 			}
 			cnt >>= 1;

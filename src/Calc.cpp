@@ -5,7 +5,7 @@
 #include "AI.hpp"
 #include "RandomAI.hpp"
 
-#define TRAINING 10
+#define TRAINING 1
 #define AI_t Black //  main AI White -> 後手         Black -> 先手
 
 int main() {
@@ -27,6 +27,7 @@ int main() {
 	AI ai;
 
     te = AI_t;
+	std::cout << "Debug: " << te << " " << game.getColor() << std::endl;
 	while (!game.isEnd()) {
 
 		game.printBoard();
@@ -89,8 +90,9 @@ int main() {
                 // 54手目以降はBFSで全探索させる それより前はMinMax
                 game.putPos(v);
                 game.nextTurn();
-                if(game.getStoneNum() >= 54) new_value = ai.dfs(game, te);
-                else new_value = ai.MinMax(game, 5, false);
+				// std::cout << "Debug: " << te << " " << game.getColor() << std::endl;
+                if(game.getStoneNum() >= 52) new_value = ai.dfs(game, !AI_t);
+                else new_value = ai.MinMax(game, 1, AI_t);
                 game.undoTurn();
                 std::cout << "評価値: " << new_value << std::endl;
 				if(value < new_value){

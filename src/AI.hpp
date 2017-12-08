@@ -162,8 +162,28 @@ public:
         }
     }
 
+    int NegaScout(Board board, bool color, bool turn, int depth, int alpha, int beta){
+        if(depth == 0){
+            return eval(board, color);
+        }
+
+
+    }
+
 private:
+
     int weight[65] = {
+        30,  -12,   0, -1, -1,   0,  -12,  30,
+       -12,  -15,  -3, -3, -3,  -3,  -15,  -12,
+         0,   -3,   0, -1, -1,   0,   -3,    0,
+        -1,   -3,  -1, -1, -1,  -1,   -3,   -1,
+        -1,   -3,  -1, -1, -1,  -1,   -3,   -1,
+         0,   -3,   0, -1, -1,   0,   -3,    0,
+         0,   -3,   0, -1, -1,   0,  -15,  -12,
+        30,  -12,   0, -1, -1,   0,  -12,   30
+    };
+
+    int good_weight[65] = {
         30,  -12,   0, -1, -1,   0,  -12,  30,
        -12,  -15,  -3, -3, -3,  -3,  -15,  -12,
          0,   -3,   0, -1, -1,   0,   -3,    0,
@@ -185,30 +205,28 @@ private:
          50,  -20,   0,  -1,  -1,   0, -20,  50
     };
 
+    int mideval(Board board, bool color){
+
+    }
+
     int eval(Board board, bool color){
-        int black_num = 0, white_num = 0;
+        int evaluation = 0;
         BitBoard pos = (BitBoard) 1 << 63;
         BitBoard white = board.getWhite();
         BitBoard black = board.getBlack();
 
         for(int i = 0; i < 63; i++){
             if((pos & white) != 0){
-                // std::cout << "add weight ... " << weight[i] << " "<< std::endl;
-                white_num += weight[i];
+                if(color == White) evaluation += weight[i];
+                if(color == Black) evaluation -= weight[i];
             }else if((pos & black) != 0){
-                black_num += weight[i];
+                if(color == Black)evaluation += weight[i];
+                if(color == White)evaluation -= weight[i];
             }
             pos >>= 1;
         }
 
-        // std::cout << black_num << "  " << white_num << std::endl;
-        if(color == Black){
-            // std::cout << "hyo-kati: " << black_num - white_num << std::endl;
-            return black_num - white_num;
-        }else{
-            // std::cout << "hyo-kati: " << white_num - black_num << std::endl;
-            return white_num - black_num;
-        }
+        return evaluation;
     }
 
     int eval2(Board board){
