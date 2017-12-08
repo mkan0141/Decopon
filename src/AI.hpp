@@ -4,9 +4,8 @@
 
 class AI{
 public:
-    // 序盤の戦略
 
-    // 中盤読み
+    // NegaMax
     int NegaMax(Board board, int depth, bool color){
         if(depth == 0 || board.isEnd() == true){
              // std::cout << "this value is " << eval(board) << std::endl;
@@ -42,6 +41,7 @@ public:
         return best;
     }
 
+    // MinMax
     int MinMax(Board board, int depth, bool color){
         if(depth == 0 || board.isEnd() == true){
             return eval(board, color);
@@ -116,7 +116,7 @@ public:
         return best;
     } 
 
-    // Debug Alpha Beat
+    // Alpha Beta
     int AlphaBeta(Board board, bool color, bool turn, int depth, int alpha, int beta){
         assert(alpha <= beta);
         // 終了処理
@@ -128,7 +128,10 @@ public:
 
         std::vector<BitBoard> vec = board.getPosVec();
 
-        // 
+        if(vec.size() == 0){
+            return eval(board, turn);
+        }
+        
         BitBoard b = board.getBlack();
         BitBoard w = board.getWhite();
 
@@ -160,14 +163,6 @@ public:
         }else{
             return beta;
         }
-    }
-
-    int NegaScout(Board board, bool color, bool turn, int depth, int alpha, int beta){
-        if(depth == 0){
-            return eval(board, color);
-        }
-
-
     }
 
 private:

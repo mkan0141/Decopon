@@ -6,7 +6,7 @@
 #include "AI.hpp"
 #include "RandomAI.hpp"
 
-#define TRAINING 30
+#define TRAINING 1
 #define AI_t Black //  main AI White -> 後手         Black -> 先手
 
 int main() {

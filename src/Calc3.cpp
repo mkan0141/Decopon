@@ -5,12 +5,11 @@
 #include "AI.hpp"
 #include "RandomAI.hpp"
 
-#define TRAINING 1
-#define AI_t Black //  main AI White -> 後手         Black -> 先手
+bool AI_t; 
 
 int main() {
     bool te;
-	std::cout << "player (先手 0 後手 1) >> " ;
+	std::cout << "playerの色を入力してください(黒: 0  白: 1)  >> " ;
 	std::cin >> te;
 
     int a;
@@ -22,8 +21,8 @@ int main() {
 	RandomAI rm;
 	AI ai;
 
-    te = AI_t;
-	std::cout << "Debug: " << te << " " << game.getColor() << std::endl;
+    AI_t = !te;
+
 	while (!game.isEnd()) {
 
 		game.printBoard();
@@ -35,6 +34,7 @@ int main() {
 
 			if(vec.size() == 0){
 				std::cout << "置ける場所がありません。 このターンをパスします" << std::endl;
+				sleep()
 				if(game.passCheck() == true){
 					std::cout << "両者とも打つ場所がありません。 ゲームを終了します" << std::endl;
 					break;
@@ -44,9 +44,10 @@ int main() {
 				game.pass();
 				continue;
 			}
-			
+
+			game.notpass();
 			x = user.input(game);
-			
+
 			te = !te;
 		}else{
             game.printPos();
@@ -55,22 +56,25 @@ int main() {
 
 			if(vec.size() == 0){
 				std::cout << "置ける場所がありません。 このターンをパスします" << std::endl;
+
 				if(game.passCheck() == true){
 					std::cout << "両者とも打つ場所がありません。 ゲームを終了します" << std::endl;
 					break;
 				}
+
 				te = !te;
 				game.nextTurn();
 				game.pass();
 				continue;
 			}
-			
-			int value = -1000000;
+
+			int value = -1000000000;
 			BitBoard b, w;
-			
+
 			b = game.getBlack();
 			w = game.getWhite();
 
+			// 四隅が取れそうなら取る
 			
 			std::vector<BitBoard> tmp;
 			for(auto v : vec){
@@ -82,29 +86,31 @@ int main() {
 			if(tmp.size() != 0 ){
 				vec = tmp;
 			}
+			
 
 			for(auto v : vec){
 				game.changeColor(b, w);
 				int new_value;
-                // std::cout << "te == game.getColor  ---> " << (game.getColor() == te) << std::endl;
 
-                // 54手目以降はBFSで全探索させる それより前はMinMax
                 game.putPos(v);
                 game.nextTurn();
-				// std::cout << "Debug: " << te << " " << game.getColor() << std::endl;
-                if(game.getStoneNum() >= 52) new_value = ai.dfs(game, !AI_t);
-                else new_value = ai.AlphaBeta(game, AI_t, false, 6, -1000000, 1000000);
+                
+				/*if(game.getStoneNum() >= 54) new_value = ai.dfs(game, !AI_t);
+                else */new_value = ai.AlphaBeta(game, AI_t, !AI_t, 7, -1000000, 1000000);
 				
-                game.undoTurn();
-                std::cout << "評価値: " << new_value << std::endl;
+				if(new_value == 1000000) new_value = -1000000;
+                
+				game.undoTurn();
+                
+				std::cout << "評価値: " << new_value << std::endl;
 				if(value < new_value){
 					value = new_value;
 					x = v;
 				}
 				game.changeColor(b, w);
 			}
-            // std::cout << "評価値: " << x << std::endl;
-			std::cout << "AI set ";
+			std::cout << "NegaMax_AI set ";
+			game.notpass();
 			game.SetPosPrint(x);
 			te = !te;
 		}
@@ -114,6 +120,7 @@ int main() {
 		game.putPos(x);
 		game.nextTurn();
 	}
+
 	std:: cout<< std::endl << std:: endl;
 	std::cout << "----------------- Game Set !! -----------------" << std::endl;
 	game.printBoard();
