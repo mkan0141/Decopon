@@ -33,7 +33,7 @@ public:
             board.putPos(vec[i]);
             board.nextTurn();
             //board.printBoard();
-            best = max(best, NegaMax(board, depth - 1, color));
+            best = Max(best, NegaMax(board, depth - 1, color));
             board.changeColor(b, w);
 
             board.undoTurn();
@@ -67,9 +67,9 @@ public:
             int now = MinMax(board, depth - 1, color);
 
             if(color == board.getColor()){
-                best = max(best, now);
+                best = Max(best, now);
             }else{
-                best = max(best, -now);
+                best = Max(best, -now);
             }
 
             board.changeColor(b, w);
@@ -229,7 +229,7 @@ private:
         
     }
 
-    int max(int x, int y){
+    int Max(int x, int y){
         if(x > y){
             return x;
         }else{
@@ -237,7 +237,7 @@ private:
         }
     }
 
-    int min(int x, int y){
+    int Min(int x, int y){
         if(x < y){
             return x;
         }else{
