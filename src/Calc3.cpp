@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <time.h>
 #include "Board.hpp"
 #include "User.hpp"
 #include "AI.hpp"
@@ -34,7 +35,6 @@ int main() {
 
 			if(vec.size() == 0){
 				std::cout << "置ける場所がありません。 このターンをパスします" << std::endl;
-				sleep()
 				if(game.passCheck() == true){
 					std::cout << "両者とも打つ場所がありません。 ゲームを終了します" << std::endl;
 					break;
@@ -50,6 +50,8 @@ int main() {
 
 			te = !te;
 		}else{
+			clock_t start = clock();
+
             game.printPos();
 
 			std::vector<BitBoard> vec = game.getPosVec();
@@ -95,8 +97,8 @@ int main() {
                 game.putPos(v);
                 game.nextTurn();
                 
-				/*if(game.getStoneNum() >= 54) new_value = ai.dfs(game, !AI_t);
-                else */new_value = ai.AlphaBeta(game, AI_t, !AI_t, 7, -1000000, 1000000);
+				if(game.getStoneNum() >= 54) new_value = ai.dfs(game, !AI_t);
+                else new_value = ai.AlphaBeta(game, AI_t, !AI_t, 7, -1000000, 1000000, start);
 				
 				if(new_value == 1000000) new_value = -1000000;
                 
@@ -109,6 +111,11 @@ int main() {
 				}
 				game.changeColor(b, w);
 			}
+
+			clock_t end = clock();
+
+			std::cout << "思考時間: " << (end - start) / CLOCKS_PER_SEC << std::endl;
+
 			std::cout << "NegaMax_AI set ";
 			game.notpass();
 			game.SetPosPrint(x);

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 #include <cassert>
 #include "Board.hpp"
 
@@ -117,8 +118,12 @@ public:
     } 
 
     // Alpha Beta
-    int AlphaBeta(Board board, bool color, bool turn, int depth, int alpha, int beta){
+    int AlphaBeta(Board board, bool color, bool turn, int depth, int alpha, int beta, clock_t start ){
         assert(alpha <= beta);
+        clock_t now = clock();
+        if(((now - start) / CLOCKS_PER_SEC) >= 260){
+            return eval(board, turn);
+        }
         // 終了処理
         if(depth == 0 || board.isEnd()){
             return eval(board, turn);
@@ -140,7 +145,7 @@ public:
             board.putPos(vec[i]);
 
             board.nextTurn();
-            int value = AlphaBeta(board, color, !turn, depth - 1, alpha, beta);
+            int value = AlphaBeta(board, color, !turn, depth - 1, alpha, beta, start);
 
             if(turn == color && value >= beta){
                 return value;
