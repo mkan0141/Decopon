@@ -1,5 +1,5 @@
 game: ./src/main.cpp
-	g++ -std=c++11 -o game ./src/main.cpp 
+	g++ -std=c++11 -o Decopon ./src/main.cpp 
 Board.hpp.gch: ./src/hpp/Board.hpp
 	g++ -std=c++11 ./src/hpp/Board.hpp
 AI.hpp.gch: ./src/hpp/AI.hpp
