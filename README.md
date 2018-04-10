@@ -10,7 +10,7 @@ $ git clone https://github.com/mkan0141/Decopon
 
 # 実行
 $ make 
-$ game
+$ Decopon
 ```
 
 ## 使ったアルゴリズムなど
