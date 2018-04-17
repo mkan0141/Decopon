@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 #include "./hpp/Board.hpp"
 #include "./hpp/User.hpp"
 #include "./hpp/AI.hpp"
@@ -9,22 +9,19 @@
 
 int main() {
     
-    int white_win = 0, black_win = 0, draw = 0;
-	
     bool te;
-	std::cout << "playerの色を入力してください(白: 0  黒: 1)  >> " ;
-	std::cin >> te;
+    
+    std::cout << "playerの色を入力してください(白: 0  黒: 1)  >> " ;
+    std::cin >> te;
 
-    int a;
-	char c;
-	BitBoard x;
-	Board game;
-	User user;
-	AI ai;
-	bool AI_t;
+    BitBoard x;
+    Board game;
+    User user;
+    AI ai;
+    bool AI_t;
 
     AI_t = te;
-	while (!game.isEnd()) {
+    while (!game.isEnd()) {
 
 		game.printBoard();
 
