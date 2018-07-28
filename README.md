@@ -1,4 +1,6 @@
 # オセロAI Decopon
+![GameScreen](images/GameScreen.png)
+
 ## Decoponについて
 Decoponは発展途上中のオセロAIです。  
 名前の由来は「開発当時、実家で一番取れていた果物だったから」です。つまり特に意味はありません。  
@@ -14,7 +16,7 @@ $ Decopon
 ```
 
 ## 使ったアルゴリズムなど
-[実装済み]
+[実装済み]  
 bitboard  
 alpha-beta法  
 
