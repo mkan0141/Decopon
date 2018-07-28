@@ -79,7 +79,7 @@ int main() {
 
             std::vector<BitBoard> tmp;
             for (auto v : vec) {
-                if (v == 9223372036854775808 || v == 72057594037927936 ||
+                if (v == 9223372036854775808uL || v == (BitBoard)72057594037927936uL ||
                     v == 128 || v == 1) {
                     tmp.push_back(v);
                 }
@@ -107,7 +107,7 @@ int main() {
 
                 game.undoTurn();
 
-                std::cout << "評価値: " << new_value << std::endl;
+                std::cout << "evaluators value: " << new_value << std::endl;
                 if (value < new_value) {
                     value = new_value;
                     x = v;
@@ -117,7 +117,7 @@ int main() {
 
             clock_t end = clock();
 
-            std::cout << "思考時間: " << (end - start) / CLOCKS_PER_SEC << "sec"
+            std::cout << "waiting time: " << (end - start) / CLOCKS_PER_SEC << "sec"
                       << std::endl;
             std::cout << "AI ---> ";
             game.SetPosPrint(x);
@@ -136,14 +136,14 @@ int main() {
     int black = game.countBlack();
     int white = game.countWhite();
 
-    std::cout << "黒: " << black << "    "
-              << "白: " << white << std::endl;
+    std::cout << "black: " << black << "    "
+              << "white: " << white << std::endl;
     if (black > white) {
-        std::cout << "黒の勝利" << std::endl;
+        std::cout << "black win !" << std::endl;
     } else if (black < white) {
-        std::cout << "白の勝利" << std::endl;
+        std::cout << "white win !" << std::endl;
     } else {
-        std::cout << "引き分け" << std::endl;
+        std::cout << "draw ..." << std::endl;
     }
     return 0;
 };
