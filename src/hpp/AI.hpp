@@ -1,8 +1,11 @@
-#include <time.h>
+#include <ctime>
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 #include "Board.hpp"
+
+typedef std::pair<int, BitBoard> MOScore;
 
 class AI {
 public:
@@ -111,6 +114,83 @@ public:
         return best;
     }
 
+    void moveOrdering(std::vector<BitBoard> &vec, AI &ai, Board &game, bool ai_color) {
+        const int mo_depth = 3;
+        std::vector<MOScore> score;
+        BitBoard b, w;
+
+        w = game.getWhite();
+        b = game.getBlack();
+
+        for(auto x : vec){std::cout << x << " ";}
+        std::cout << std::endl;
+
+        for(int i = 0; i < (int)vec.size(); i++){
+            game.changeColor(b, w);
+
+            game.putPos(vec[i]);
+            game.nextTurn();
+
+            score.push_back(std::make_pair(ai.AlphaBeta(game, ai_color, !ai_color, mo_depth, -1000000,1000000, 0), vec[i]));
+            std::cout <<score[i].first << " ";
+            game.undoTurn();
+
+            game.changeColor(b, w);
+        }std::cout << std::endl;
+
+        std::sort(score.begin(), score.end(), std::greater<MOScore>());
+
+        for(int i = 0; i < (int)score.size(); i++){
+            std::cout << "score: " << score[i].first << " ";
+            vec[i] = score[i].second;
+        }
+
+        std::cout << std::endl;
+
+        for(auto x : vec){std::cout << x << " ";}
+        std::cout << std::endl;
+    }
+
+    BitBoard search(Board &game, AI &ai, std::vector<BitBoard> vec, bool ai_color, int depth){
+        int value = -100000000;
+        BitBoard ret = 0, b, w;
+        clock_t start;
+        w = game.getWhite();
+        b = game.getBlack();
+
+        moveOrdering(vec, ai, game, ai_color);
+
+        for (auto v : vec) {
+
+            start = clock();
+
+             game.changeColor(b, w);
+             int new_value;
+
+             game.putPos(v);
+             game.nextTurn();
+
+             if (game.getStoneNum() >= 50)
+                 new_value = ai.AlphaBeta(game, ai_color, !ai_color, depth, -1000000,1000000, start);
+             else
+                 new_value = ai.AlphaBeta(game, ai_color, !ai_color, depth, -1000000, 1000000, start);
+
+              if (new_value == 1000000) new_value = -1000000;
+
+              game.undoTurn();
+
+              std::cout << "evaluators value: " << new_value << std::endl;
+              if (value < new_value) {
+                  value = new_value;
+                  ret = v;
+              }
+
+              game.changeColor(b, w);
+        }
+
+        return ret;
+    }
+
     // Alpha Beta
     int AlphaBeta(Board board, bool color, bool turn, int depth, int alpha,
                   int beta, clock_t start) {
@@ -198,6 +278,7 @@ private:
 
     int eval(Board board, bool color) {
         int evaluation = 0;
+
         BitBoard pos = (BitBoard)1 << 63;
         BitBoard white = board.getWhite();
         BitBoard black = board.getBlack();
@@ -215,6 +296,8 @@ private:
 
         return evaluation;
     }
+
+
 
     int max(int x, int y) {
         return (y < x) ? x : y;
