@@ -1,6 +1,7 @@
 #include <time.h>
 #include <cassert>
 #include <iostream>
+
 #include "Board.hpp"
 
 class AI {
@@ -28,7 +29,7 @@ public:
             board.putPos(vec[i]);
             board.nextTurn();
             // board.printBoard();
-            best = Max(best, NegaMax(board, depth - 1, color));
+            best = max(best, NegaMax(board, depth - 1, color));
             board.changeColor(b, w);
 
             board.undoTurn();
@@ -36,7 +37,6 @@ public:
         return best;
     }
 
-    // typo
     // MinMax
     int MinMax(Board board, int depth, bool color) {
         if (depth == 0 || board.isEnd() == true) {
@@ -62,9 +62,9 @@ public:
             int now = MinMax(board, depth - 1, color);
 
             if (color == board.getColor()) {
-                best = Max(best, now);
+                best = max(best, now);
             } else {
-                best = Max(best, -now);
+                best = max(best, -now);
             }
 
             board.changeColor(b, w);
@@ -216,19 +216,11 @@ private:
         return evaluation;
     }
 
-    int Max(int x, int y) {
-        if (x > y) {
-            return x;
-        } else {
-            return y;
-        }
+    int max(int x, int y) {
+        return (y < x) ? x : y;
     }
 
     int Min(int x, int y) {
-        if (x < y) {
-            return x;
-        } else {
-            return y;
-        }
+        return (x < y) ? x : y;
     }
 };
