@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cstdint>
 #include <iostream>
 #include <map>
@@ -7,6 +8,7 @@
 #define Black 0
 #define White 1
 #define None -1
+
 typedef std::uint64_t BitBoard;
 
 class Board {
@@ -142,6 +144,8 @@ public:
     /*ゲームを続けられるかの判定*/
     bool isEnd() {
         // std::cout << "現在の石の数: " << this->stone_num << std::endl;
+       return (__builtin_popcountll(black) + __builtin_popcountll(white) == 64);
+
         if (this->stone_num == 64) {
             return true;
         } else {
@@ -205,6 +209,8 @@ public:
             return false;
         }
     }
+
+    int turnNum(){ return this->turn_num;  }
 
 private:
     BitBoard black, white;
