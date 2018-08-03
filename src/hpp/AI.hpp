@@ -10,17 +10,13 @@ typedef std::pair<int, BitBoard> MOScore;
 class AI {
 public:
     // NegaMax
-    int NegaMax(Board board, int depth, bool color) {
-        if (depth == 0 || board.isEnd() == true) {
-            // std::cout << "this value is " << eval(board) << std::endl;
-            // board.printBoard();
-            if (board.getColor() == color)
-                return eval(board, color);
-            else
-                return -eval(board, color);
+    int NegaMax(Board board, int alpha, int beta, int depth, bool turn, const bool ai_color) {
+        assert(alpha <= beta);
+        if (depth == 0 || board.isEnd()) {
+            if(turn == ai_color)return eval(board, turn);
+            else return -eval(board, turn);
         }
 
-        int best = 0;
         std::vector<BitBoard> vec = board.getPosVec();
         BitBoard b, w;
 
@@ -28,16 +24,19 @@ public:
         b = board.getBlack();
         w = board.getWhite();
 
-        for (int i = 0; i < (int)vec.size(); i++) {
-            board.putPos(vec[i]);
+        for (auto v : vec) {
+            board.putPos(v);
             board.nextTurn();
-            // board.printBoard();
-            best = max(best, NegaMax(board, depth - 1, color));
-            board.changeColor(b, w);
 
+            alpha = std::max(alpha, -NegaMax(board, -beta, -alpha, depth - 1, !turn, ai_color));
+
+            board.changeColor(b, w);
             board.undoTurn();
+
+            if(alpha >= beta)
+                    return beta;
         }
-        return best;
+        return alpha;
     }
 
     // MinMax
@@ -114,7 +113,7 @@ public:
         return best;
     }
 
-    void moveOrdering(std::vector<BitBoard> &vec, AI &ai, Board &game, bool ai_color) {
+    void moveOrdering(std::vector<BitBoard> &vec, Board &game, bool ai_color) {
         const int mo_depth = 3;
         std::vector<MOScore> score;
         BitBoard b, w;
@@ -131,7 +130,7 @@ public:
             game.putPos(vec[i]);
             game.nextTurn();
 
-            score.push_back(std::make_pair(ai.AlphaBeta(game, ai_color, !ai_color, mo_depth, -1000000,1000000, 0), vec[i]));
+            score.push_back(std::make_pair(AlphaBeta(game, ai_color, !ai_color, mo_depth - 1, -1000000,1000000, 0), vec[i]));
             std::cout <<score[i].first << " ";
             game.undoTurn();
 
@@ -151,14 +150,14 @@ public:
         std::cout << std::endl;
     }
 
-    BitBoard search(Board &game, AI &ai, std::vector<BitBoard> vec, bool ai_color, int depth){
+    BitBoard search(Board &game, std::vector<BitBoard> vec, bool ai_color, int depth){
         int value = -100000000;
         BitBoard ret = 0, b, w;
         clock_t start;
         w = game.getWhite();
         b = game.getBlack();
 
-        moveOrdering(vec, ai, game, ai_color);
+        // moveOrdering(vec, game, ai_color);
 
         for (auto v : vec) {
 
@@ -171,9 +170,11 @@ public:
              game.nextTurn();
 
              if (game.getStoneNum() >= 50)
-                 new_value = ai.AlphaBeta(game, ai_color, !ai_color, depth, -1000000,1000000, start);
+                 //new_value = AlphaBeta(game, ai_color, !ai_color, 7, -1000000,1000000, start);
+                 new_value = -NegaMax(game, -100000000, 100000000, 7, !ai_color, ai_color);
              else
-                 new_value = ai.AlphaBeta(game, ai_color, !ai_color, depth, -1000000, 1000000, start);
+                 //new_value = AlphaBeta(game, ai_color, !ai_color, 7, -1000000, 1000000, start);
+                 new_value = -NegaMax(game, -1000000, 1000000, 7, !ai_color, ai_color);
 
               if (new_value == 1000000) new_value = -1000000;
 
@@ -247,10 +248,15 @@ public:
 
 private:
     int weight[65] = {
-        30, -12, 0,  -1, -1, 0,  -12, 30,  -12, -15, -3, -3, -3, -3, -15, -12,
-        0,  -3,  0,  -1, -1, 0,  -3,  0,   -1,  -3,  -1, -1, -1, -1, -3,  -1,
-        -1, -3,  -1, -1, -1, -1, -3,  -1,  0,   -3,  0,  -1, -1, 0,  -3,  0,
-        0,  -3,  0,  -1, -1, 0,  -15, -12, 30,  -12, 0,  -1, -1, 0,  -12, 30};
+         30, -12, 0,  -1, -1, 0,  -12, 30,
+        -12,-15, -3, -3, -3, -3, -15, -12,
+          0,  -3,  0,  -1, -1, 0,  -3,  0,
+         -1,  -3,  -1, -1, -1, -1, -3,  -1,
+         -1, -3,  -1, -1, -1, -1, -3,  -1,
+          0,   -3,  0,  -1, -1, 0,  -3,  0,
+          0,  -3,  0,  -1, -1, 0,  -15, -12,
+         30,  -12, 0,  -1, -1, 0,  -12, 30
+    };
 
     /*
        int good_weight[65] = {
