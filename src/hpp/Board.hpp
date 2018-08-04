@@ -145,12 +145,6 @@ public:
     bool isEnd() {
         // std::cout << "現在の石の数: " << this->stone_num << std::endl;
        return (__builtin_popcountll(black) + __builtin_popcountll(white) == 64);
-
-        if (this->stone_num == 64) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     BitBoard retValid() { return this->valid; }
