@@ -10,14 +10,20 @@ typedef std::pair<int, BitBoard> MOScore;
 class AI {
 public:
     // NegaMax
-    int NegaMax(Board board, int alpha, int beta, int depth, bool turn, const bool ai_color) {
+    int NegaAlpha(Board board, int alpha, int beta, short depth, bool turn, const bool ai_color, bool pass) {
         assert(alpha <= beta);
+        // std::cout << __builtin_popcountll(board.getBlack()) <<" "<< __builtin_popcountll(board.getWhite()) << std::endl;
+        if (board.isEnd()) std::cout << "end" << std::endl;
         if (depth == 0 || board.isEnd()) {
             if(turn == ai_color)return eval(board, turn);
             else return -eval(board, turn);
         }
 
         std::vector<BitBoard> vec = board.getPosVec();
+        if(vec.size() == 0){
+            if(pass)return eval(board, turn);
+            return -NegaAlpha(board, -beta, -alpha, depth, !turn, ai_color, 1);
+        }
         BitBoard b, w;
 
         // 移動前の盤面を保存
@@ -28,13 +34,13 @@ public:
             board.putPos(v);
             board.nextTurn();
 
-            alpha = std::max(alpha, -NegaMax(board, -beta, -alpha, depth - 1, !turn, ai_color));
+            alpha = std::max(alpha, -NegaAlpha(board, -beta, -alpha, depth - 1, !turn, ai_color, 0));
 
             board.changeColor(b, w);
             board.undoTurn();
 
             if(alpha >= beta)
-                    return beta;
+                return beta;
         }
         return alpha;
     }
@@ -157,7 +163,7 @@ public:
         w = game.getWhite();
         b = game.getBlack();
 
-        // moveOrdering(vec, game, ai_color);
+        moveOrdering(vec, game, ai_color);
 
         for (auto v : vec) {
 
@@ -171,10 +177,10 @@ public:
 
              if (game.getStoneNum() >= 50)
                  //new_value = AlphaBeta(game, ai_color, !ai_color, 7, -1000000,1000000, start);
-                 new_value = -NegaMax(game, -100000000, 100000000, 7, !ai_color, ai_color);
+                 new_value = -NegaAlpha(game, -100000000, 100000000, 7, !ai_color, ai_color, 0);
              else
                  //new_value = AlphaBeta(game, ai_color, !ai_color, 7, -1000000, 1000000, start);
-                 new_value = -NegaMax(game, -1000000, 1000000, 7, !ai_color, ai_color);
+                 new_value = -NegaAlpha(game, -1000000, 1000000, 7, !ai_color, ai_color, 0);
 
               if (new_value == 1000000) new_value = -1000000;
 
